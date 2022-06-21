@@ -1,4 +1,4 @@
-name: aml-sweep
+name: aml_sweep
 channels:
   - anaconda
   - pytorch

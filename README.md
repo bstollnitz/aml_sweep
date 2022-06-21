@@ -33,7 +33,7 @@ conda env create -f environment.yml
 Activate conda environment:
 
 ```
-conda activate aml-sweep
+conda activate aml_sweep
 ```
 
 
@@ -49,21 +49,21 @@ mlflow ui
 * Make a local prediction using the trained mlflow model. You can use either csv or json files:
 
 ```
-mlflow models predict --model-uri "aml-sweep/model" --input-path "aml-sweep/test-data/images.csv" --content-type csv
-mlflow models predict --model-uri "aml-sweep/model" --input-path "aml-sweep/test-data/images.json" --content-type json
+mlflow models predict --model-uri "aml_sweep/model" --input-path "aml_sweep/test_data/images.csv" --content-type csv
+mlflow models predict --model-uri "aml_sweep/model" --input-path "aml_sweep/test_data/images.json" --content-type json
 ```
 
 
 ## Train and deploy in the cloud
 
 ```
-cd aml-sweep
+cd aml_sweep
 ```
 
 Create the compute cluster.
 
 ```
-az ml compute create -f cloud/cluster-gpu.yml 
+az ml compute create -f cloud/cluster-cpu.yml 
 ```
 
 Create the dataset.
@@ -75,20 +75,20 @@ az ml data create -f cloud/data.yml
 Run the training job.
 
 ```
-run_id=$(az ml job create -f cloud/job.yml --query name -o tsv)
+run_id=$(az ml job create -f cloud/sweep-job.yml --query name -o tsv)
 ```
 
 Go to the Azure ML Studio and wait until the Job completes.
 You don't need to download the trained model, but here's how you would do it if you wanted to:
 
 ```
-az ml job download --name $run_id --output-name "model"
+az ml job download --name $run_id --output-name "model_dir"
 ```
 
 Create the Azure ML model from the output.
 
 ```
-az ml model create --name model-sweep --version 1 --path "azureml://jobs/$run_id/outputs/model" --type mlflow_model
+az ml model create --name model-sweep --version 1 --path "azureml://jobs/$run_id/outputs/model_dir" --type mlflow_model
 ```
 
 Create the endpoint.
@@ -101,5 +101,5 @@ az ml online-deployment create -f cloud/deployment.yml --all-traffic
 Invoke the endpoint.
 
 ```
-az ml online-endpoint invoke --name endpoint-sweep --request-file test-data/images_azureml.json
+az ml online-endpoint invoke --name endpoint-sweep --request-file test_data/images_azureml.json
 ```

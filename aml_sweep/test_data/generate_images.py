@@ -9,9 +9,9 @@ import pandas
 from PIL import Image
 from torchvision import datasets
 
-DATA_DIR = "aml-sweep/test-data/data"
-IMAGES_DIR = "aml-sweep/test-data/images"
-TEST_DATA_DIR = "aml-sweep/test-data"
+DATA_DIR = "aml_sweep/test_data/data"
+IMAGES_DIR = "aml_sweep/test_data/images"
+TEST_DATA_DIR = "aml_sweep/test_data"
 
 
 def generate_images(num_images: int) -> None:

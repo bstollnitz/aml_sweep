@@ -16,8 +16,8 @@ from torchvision.transforms import ToTensor
 from neural_network import NeuralNetwork
 from utils_train_nn import evaluate, fit
 
-DATA_DIR = "aml-sweep/data"
-MODEL_DIR = "aml-sweep/model/"
+DATA_DIR = "aml_sweep/data"
+MODEL_DIR = "aml_sweep/model/"
 
 
 def load_train_val_data(

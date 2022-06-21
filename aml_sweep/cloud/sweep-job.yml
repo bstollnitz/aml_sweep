@@ -2,13 +2,13 @@ $schema: https://azuremlschemas.azureedge.net/latest/sweepJob.schema.json
 
 type: sweep
 description: Trains a simple neural network on the Fashion-MNIST dataset.
-compute: azureml:cluster-gpu
+compute: azureml:cluster-cpu
 
 inputs:
   fashion_mnist:
     path: azureml:data-fashion-mnist@latest
 outputs:
-  model:
+  model_dir:
     type: mlflow_model
 
 search_space:
@@ -27,9 +27,9 @@ trial:
     --data_dir ${{inputs.fashion_mnist}}
     --learning_rate ${{search_space.learning_rate}}
     --batch_size ${{search_space.batch_size}}
-    --model_dir ${{outputs.model}}
+    --model_dir ${{outputs.model_dir}}
   environment:
-    image: mcr.microsoft.com/azureml/openmpi3.1.2-cuda10.2-cudnn8-ubuntu18.04:latest
+    image: mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu20.04:latest
     conda_file: conda.yml
 
 objective:
