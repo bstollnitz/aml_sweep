@@ -34,7 +34,7 @@ trial:
 
 objective:
   goal: maximize
-  primary_metric: accuracy
+  primary_metric: training_accuracy
 
 sampling_algorithm:
   type: random
@@ -44,6 +44,6 @@ early_termination:
 
 limits:
   max_total_trials: 20
-  max_concurrent_trials: 5
+  max_concurrent_trials: 4
   timeout: 10000
   
