@@ -14,8 +14,8 @@ outputs:
 search_space:
     learning_rate:
         type: loguniform
-        min_value: 0.001
-        max_value: 0.1
+        min_value: -6.90775527898 # ln(0.001)
+        max_value: -2.30258509299 # ln(0.1)
     batch_size:
         type: choice
         values: [32, 64, 128, 256]
@@ -41,9 +41,11 @@ sampling_algorithm:
 
 early_termination:
   type: median_stopping
+  evaluation_interval: 1
 
 limits:
-  max_total_trials: 20
+  max_total_trials: 12
   max_concurrent_trials: 4
-  timeout: 10000
+  timeout: 600 # in minutes (10 hours)
+  trial_timeout: 7200 # in seconds (2 hours)
   
