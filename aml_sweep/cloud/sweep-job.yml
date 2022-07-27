@@ -34,7 +34,7 @@ trial:
 
 objective:
   goal: maximize
-  primary_metric: training_accuracy
+  primary_metric: validation_accuracy
 
 sampling_algorithm:
   type: random
