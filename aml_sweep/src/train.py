@@ -94,12 +94,13 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--data_dir", dest="data_dir", default=DATA_DIR)
-    parser.add_argument("--learning_rate", dest="learning_rate", default=0.1)
-    parser.add_argument("--batch_size", dest="batch_size", default=64)
+    parser.add_argument("--learning_rate",
+                        dest="learning_rate",
+                        default=0.1,
+                        type=float)
+    parser.add_argument("--batch_size", dest="batch_size", default=64, type=int)
     parser.add_argument("--model_dir", dest="model_dir", default=MODEL_DIR)
     args = parser.parse_args()
-    args.learning_rate = float(args.learning_rate)
-    args.batch_size = int(args.batch_size)
     logging.info("input parameters: %s", vars(args))
 
     device = "cuda" if torch.cuda.is_available() else "cpu"

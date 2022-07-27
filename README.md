@@ -37,7 +37,7 @@ conda activate aml_sweep
 ```
 
 
-## Train and predict locally
+## Training and inference on your development machine
 
 * Run train.py by pressing F5.
 * Analyze the metrics logged in the "mlruns" directory with the following command:
@@ -49,16 +49,13 @@ mlflow ui
 * Make a local prediction using the trained mlflow model. You can use either csv or json files:
 
 ```
-mlflow models predict --model-uri "aml_sweep/model" --input-path "aml_sweep/test_data/images.csv" --content-type csv
-mlflow models predict --model-uri "aml_sweep/model" --input-path "aml_sweep/test_data/images.json" --content-type json
-```
-
-
-## Train and deploy in the cloud
-
-```
 cd aml_sweep
+mlflow models predict --model-uri "model" --input-path "test_data/images.csv" --content-type csv
+mlflow models predict --model-uri "model" --input-path "test_data/images.json" --content-type json
 ```
+
+
+## Training and deploying in the cloud
 
 Create the compute cluster.
 
@@ -79,16 +76,16 @@ run_id=$(az ml job create -f cloud/sweep-job.yml --query name -o tsv)
 ```
 
 Go to the Azure ML Studio and wait until the Job completes.
-You don't need to download the trained model, but here's how you would do it if you wanted to:
-
-```
-az ml job download --name $run_id --output-name "model_dir"
-```
-
 Create the Azure ML model from the output.
 
 ```
 az ml model create --name model-sweep --version 1 --path "azureml://jobs/$run_id/outputs/model_dir" --type mlflow_model
+```
+
+You don't need to download the trained model, but here's how you would do it if you wanted to:
+
+```
+az ml job download --name $run_id --output-name "model_dir"
 ```
 
 Create the endpoint.
