@@ -2,6 +2,12 @@
 
 This project shows how to train a Fashion MNIST model with, by doing hyperparameter tuning using an Azure ML sweep job, and how to deploy it using an online managed endpoint. It uses MLflow for tracking and model representation.
 
+
+## Blog post
+
+To learn more about the code in this repo, check out the accompanying blog post: https://bea.stollnitz.com/blog/aml-sweep/
+
+
 ## Azure setup
 
 * You need to have an Azure subscription. You can get a [free subscription](https://azure.microsoft.com/en-us/free?WT.mc_id=aiml-44167-bstollnitz) to try it out.
@@ -106,3 +112,9 @@ Clean up the endpoint, to avoid getting charged.
 ```
 az ml online-endpoint delete --name endpoint-sweep -y
 ```
+
+
+## Related resources
+
+* [Sweep Job YAML schema](https://docs.microsoft.com/en-us/azure/machine-learning/reference-yaml-job-sweep?WT.mc_id=aiml-44167-bstollnitz)
+* [Hyperparameter tuning in Azure ML](https://docs.microsoft.com/en-us/azure/machine-learning/how-to-tune-hyperparameters?WT.mc_id=aiml-44167-bstollnitz)
