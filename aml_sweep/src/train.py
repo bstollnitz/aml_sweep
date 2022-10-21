@@ -4,7 +4,6 @@ import argparse
 import logging
 import shutil
 from pathlib import Path
-from typing import Tuple
 
 import mlflow
 import numpy as np
@@ -24,8 +23,8 @@ MODEL_DIR = "aml_sweep/model/"
 
 
 def load_train_val_data(
-        data_dir: str, batch_size: int,
-        training_fraction: float) -> Tuple[DataLoader, DataLoader]:
+    data_dir: str, batch_size: int, training_fraction: float
+) -> tuple[DataLoader[torch.Tensor], DataLoader[torch.Tensor]]:
     """
     Returns two DataLoader objects that wrap training and validation data.
     Training and validation data are extracted from the full original training
@@ -46,7 +45,7 @@ def load_train_val_data(
     return (train_loader, val_loader)
 
 
-def save_model(model_dir, model: nn.Module) -> None:
+def save_model(model_dir: str, model: nn.Module) -> None:
     """
     Saves the trained model.
     """
@@ -98,7 +97,7 @@ def train(data_dir: str, learning_rate: float, batch_size: int, model_dir: str,
     save_model(model_dir, model)
 
 
-def main():
+def main() -> None:
     logging.basicConfig(level=logging.INFO)
 
     parser = argparse.ArgumentParser()
