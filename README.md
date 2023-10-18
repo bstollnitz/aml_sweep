@@ -1,102 +1,114 @@
-# How to do hyperparameter tuning in Azure ML
+
+# Hyperparameter Tuning in Azure Machine Learning
 
 This project shows how to train a Fashion MNIST model with, by doing hyperparameter tuning using an Azure ML sweep job, and how to deploy it using an online managed endpoint. It uses MLflow for tracking and model representation.
 
-## Blog post
+## Blog Post
 
-To learn more about the code in this repo, check out the accompanying blog post: https://bea.stollnitz.com/blog/aml-sweep/
+To learn more about the code in this repo, check out the accompanying blog post: [Hyperparameter Tuning with Azure ML Sweep Job](https://bea.stollnitz.com/blog/aml-sweep/)
 
 ## Setup
 
-- You need to have an Azure subscription. You can get a [free subscription](https://azure.microsoft.com/en-us/free) to try it out.
-- Create a [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal).
-- Create a new machine learning workspace by following the "Create the workspace" section of the [documentation](https://docs.microsoft.com/en-us/azure/machine-learning/quickstart-create-resources). Keep in mind that you'll be creating a "machine learning workspace" Azure resource, not a "workspace" Azure resource, which is entirely different!
-- Install the Azure CLI by following the instructions in the [documentation](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli).
-- Install the ML extension to the Azure CLI by following the "Installation" section of the [documentation](https://docs.microsoft.com/en-us/azure/machine-learning/how-to-configure-cli).
-- Install and activate the conda environment by executing the following commands:
+To replicate this project, follow the steps below:
 
-```
-conda env create -f environment.yml
-conda activate aml_sweep
-```
+1. **Azure Subscription**: You'll need an [Azure subscription](https://azure.microsoft.com/en-us/free) to proceed.
 
-- Within VS Code, go to the Command Palette clicking "Ctrl + Shift + P," type "Python: Select Interpreter," and select the environment that matches the name of this project.
-- In a terminal window, log in to Azure by executing `az login --use-device-code`.
-- Set your default subscription by executing `az account set -s "<YOUR_SUBSCRIPTION_NAME_OR_ID>"`. You can verify your default subscription by executing `az account show`, or by looking at `~/.azure/azureProfile.json`.
-- Set your default resource group and workspace by executing `az configure --defaults group="<YOUR_RESOURCE_GROUP>" workspace="<YOUR_WORKSPACE>"`. You can verify your defaults by executing `az configure --list-defaults` or by looking at `~/.azure/config`.
-- You can now open the [Azure Machine Learning studio](https://ml.azure.com/), where you'll be able to see and manage all the machine learning resources we'll be creating.
-- Install the [Azure Machine Learning extension for VS Code](https://marketplace.visualstudio.com/items?itemName=ms-toolsai.vscode-ai), and log in to it by clicking on "Azure" in the left-hand menu, and then clicking on "Sign in to Azure."
+2. **Resource Group**: Create a [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal).
 
-## Training and inference on your development machine
+3. **Machine Learning Workspace**: Establish a new machine learning workspace as outlined in the ["Create the Workspace" section](https://docs.microsoft.com/en-us/azure/machine-learning/quickstart-create-resources) of the Azure ML documentation. Note that you'll be creating a "machine learning workspace" Azure resource, not a "workspace" Azure resource.
 
-- Under "Run and Debug" on VS Code's left navigation, choose the "Train locally" run configuration and press F5.
-- Analyze the metrics logged in the "mlruns" directory with the following command:
+4. **Azure CLI**: Install the Azure CLI by following the instructions in the [official documentation](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli).
 
-```
-mlflow ui
-```
+5. **Azure ML Extension**: Extend the Azure CLI with the ML extension by following the steps outlined in the ["Installation" section](https://docs.microsoft.com/en-us/azure/machine-learning/how-to-configure-cli) of the Azure ML documentation.
 
-- Make a local prediction using the trained mlflow model. You can use either csv or json files:
+6. **Conda Environment**: Set up and activate the Conda environment by executing the commands below:
 
-```
-cd aml_sweep
-mlflow models predict --model-uri "model" --input-path "test_data/images.csv" --content-type csv --env-manager local
-mlflow models predict --model-uri "model" --input-path "test_data/images.json" --content-type json --env-manager local
-```
+   ```bash
+   conda env create -f environment.yml
+   conda activate aml_sweep
+   ```
 
-## Training and deploying in the cloud
+7. **Visual Studio Code (VS Code)**:
+   - In VS Code, navigate to the Command Palette using "Ctrl + Shift + P," search for "Python: Select Interpreter," and choose the environment corresponding to the project's name.
+   - Log in to Azure using the Azure CLI: `az login --use-device-code`.
+   - Set your default subscription: `az account set -s "<YOUR_SUBSCRIPTION_NAME_OR_ID>"`.
+   - Set your default resource group and workspace: `az configure --defaults group="<YOUR_RESOURCE_GROUP>" workspace="<YOUR_WORKSPACE>"`.
 
-Create the compute cluster.
+8. **Azure Machine Learning Studio**: Open the [Azure Machine Learning studio](https://ml.azure.com/) to manage your machine learning resources.
 
-```
-az ml compute create -f cloud/cluster-cpu.yml
-```
+9. **Azure Machine Learning Extension for VS Code**: Install the [Azure Machine Learning extension for VS Code](https://marketplace.visualstudio.com/items?itemName=ms-toolsai.vscode-ai) and sign in to your Azure account through the extension.
 
-Create the dataset.
+## Local Training and Inference
 
-```
-az ml data create -f cloud/data.yml
-```
+1. **Training**:
+   - In VS Code's left navigation, select "Run and Debug," then choose the "Train locally" run configuration and press F5.
+   - Analyze logged metrics using MLflow UI: `mlflow ui`.
 
-Run the training job.
+2. **Local Prediction**:
+   - Perform local predictions using the trained MLflow model with CSV or JSON files:
+   
+     ```bash
+     cd aml_sweep
+     mlflow models predict --model-uri "model" --input-path "test_data/images.csv" --content-type csv --env-manager local
+     mlflow models predict --model-uri "model" --input-path "test_data/images.json" --content-type json --env-manager local
+     ```
 
-```
-run_id=$(az ml job create -f cloud/sweep-job.yml --query name -o tsv)
-```
+## Cloud-Based Training and Deployment
 
-Go to the Azure ML Studio and wait until the Job completes.
-Create the Azure ML model from the output.
+1. **Create Compute Cluster**:
+   - Create a compute cluster using the provided YAML configuration:
+   
+     ```bash
+     az ml compute create -f cloud/cluster-cpu.yml
+     ```
 
-```
-az ml model create --name model-sweep --version 1 --path "azureml://jobs/$run_id/outputs/model_dir" --type mlflow_model
-```
+2. **Create Dataset**:
+   - Create a dataset using the provided YAML configuration:
+   
+     ```bash
+     az ml data create -f cloud/data.yml
+     ```
 
-You don't need to download the trained model, but here's how you would do it if you wanted to:
+3. **Run Training Job**:
+   - Run the training job using the provided YAML configuration and capture the run ID:
+   
+     ```bash
+     run_id=$(az ml job create -f cloud/sweep-job.yml --query name -o tsv)
+     ```
 
-```
-az ml job download --name $run_id --output-name "model_dir"
-```
+4. **Azure ML Model Creation**:
+   - Create an Azure ML model from the output of the training job:
+   
+     ```bash
+     az ml model create --name model-sweep --version 1 --path "azureml://jobs/$run_id/outputs/model_dir" --type mlflow_model
+     ```
 
-Create the endpoint.
+5. **Create and Deploy Endpoint**:
+   - Create an endpoint using the provided YAML configuration:
+   
+     ```bash
+     az ml online-endpoint create -f cloud/endpoint.yml
+     az ml online-deployment create -f cloud/deployment.yml --all-traffic
+     ```
 
-```
-az ml online-endpoint create -f cloud/endpoint.yml
-az ml online-deployment create -f cloud/deployment.yml --all-traffic
-```
+6. **Invoke Endpoint**:
+   - Invoke the endpoint for predictions:
+   
+     ```bash
+     az ml online-endpoint invoke --name endpoint-sweep --request-file test_data/images_azureml.json
+     ```
 
-Invoke the endpoint.
+7. **Cleanup**:
+   - Delete the endpoint to prevent charges:
+   
+     ```bash
+     az ml online-endpoint delete --name endpoint-sweep -y
+     ```
 
-```
-az ml online-endpoint invoke --name endpoint-sweep --request-file test_data/images_azureml.json
-```
+## Additional Resources
 
-Clean up the endpoint, to avoid getting charged.
+For further information, refer to the following resources:
 
-```
-az ml online-endpoint delete --name endpoint-sweep -y
-```
-
-## Related resources
-
-- [Sweep Job YAML schema](https://docs.microsoft.com/en-us/azure/machine-learning/reference-yaml-job-sweep?WT.mc_id=aiml-44167-bstollnitz)
-- [Hyperparameter tuning in Azure ML](https://docs.microsoft.com/en-us/azure/machine-learning/how-to-tune-hyperparameters?WT.mc_id=aiml-44167-bstollnitz)
+- [Sweep Job YAML Schema](https://docs.microsoft.com/en-us/azure/machine-learning/reference-yaml-job-sweep?WT.mc_id=aiml-44167-bstollnitz)
+- [Hyperparameter Tuning in Azure ML](https://docs.microsoft.com/en-us/azure/machine-learning/how-to-tune-hyperparameters?WT.mc_id=aiml-44167-bstollnitz)
+  
